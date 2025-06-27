@@ -1,28 +1,43 @@
 const express = require('express');
-const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const cors = require('cors');
 
 app.use(cors());
 app.use(express.json());
 
-const users = [
-  { username: 'purity', password: 'Purity@12345' },
-  { username: 'admin', password: 'Admin@12345' }
+// Define login credentials with roles
+const credentials = [
+  {
+    username: 'admin',
+    password: 'Admin@12345',
+    role: 'admin'
+  },
+  {
+    username: 'purity',
+    password: 'Purity@12345',
+    role: 'user'
+  }
 ];
 
+// Login route
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
-  const user = users.find(u => u.username === username && u.password === password);
+
+  const user = credentials.find(
+    cred => cred.username === username && cred.password === password
+  );
+
   if (user) {
-    res.status(200).json({ success: true, message: 'Login successful' });
+    res.json({ success: true, role: user.role });
   } else {
-    res.status(401).json({ success: false, message: 'Invalid credentials' });
+    res.json({ success: false });
   }
 });
 
+// Health check
 app.get('/', (req, res) => {
-  res.send('VEE-PLUS Login API is live');
+  res.send('✅ VEE-PLUS Login API is live');
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
